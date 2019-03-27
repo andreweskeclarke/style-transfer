@@ -189,3 +189,6 @@ tags
 [._]*.un~
 
 # End of https://www.gitignore.io/api/vim,macos,linux,python
+
+
+images/

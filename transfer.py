@@ -48,12 +48,11 @@ style_loss_fns = [StyleLoss().cuda()] * len(style_targets)
 loss_layers = content_layers + style_layers
 targets = content_targets + style_targets
 loss_fns = content_loss_fns + style_loss_fns
-weights = torch.ones(len(targets)).cuda()
-
+weights = [1000]*len(content_targets) + [5]*len(style_targets)
 optimizer = optim.LBFGS([stylized_image])
-
 n_iterations = 100
 for i in range(1, n_iterations):
+    save_img(content_image.data[0].cpu().squeeze(), 'steps/transfer_0.png')
     print('Iteration: {}'.format(i))
     def single_step():
         optimizer.zero_grad()
@@ -65,7 +64,7 @@ for i in range(1, n_iterations):
         total_loss.backward()
         return total_loss
     optimizer.step(single_step)
-    save_img(stylized_image.data[0].cpu().squeeze(), 'transfer_{}.png'.format(i))
+    save_img(stylized_image.data[0].cpu().squeeze(), 'steps/transfer_{}.png'.format(str(i).zfill(5)))
 
 final_stylized_image = stylized_image.data[0].cpu()
 save_img(final_stylized_image.squeeze())

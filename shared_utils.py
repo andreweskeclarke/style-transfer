@@ -2,6 +2,7 @@
 # Available at https://github.com/Shashi456/Neural-Style
 
 import torch
+import os
 from torchvision import datasets, models, transforms, utils
 from torch.autograd import Variable
 from PIL import Image
@@ -29,7 +30,7 @@ def save_img(img, filename='transfer_final.png'):
          ])
     img = post(img)
     img = img.clamp_(0,1)
-    utils.save_image(img,
-                '%s/%s' % ("./images", filename),
-                normalize=True)
+    image_filepath = os.path.join("./images", filename)
+    os.makedirs(os.path.dirname(image_filepath), exist_ok=True)
+    utils.save_image(img, image_filepath, normalize=True)
     return

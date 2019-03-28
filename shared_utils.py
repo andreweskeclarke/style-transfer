@@ -29,7 +29,7 @@ def load_img(path):
     img = img.unsqueeze(0)
     return img
 
-def save_img(img, filename='transfer_final.png'):
+def save_img(img, filename):
     post = transforms.Compose([
          transforms.Lambda(lambda x: x.mul_(1./255)),
          #transforms.Normalize(mean=[-0.40760392, -0.45795686, -0.48501961], std=[1,1,1]),

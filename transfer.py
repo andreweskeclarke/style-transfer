@@ -15,6 +15,7 @@ from shared_utils import load_img, save_img
 
 content_image_path = './images/content.jpg'
 style_image_path = './images/style.jpg'
+
 style_image = load_img(style_image_path).cuda()
 content_image = load_img(content_image_path).cuda()
 stylized_image = Variable(content_image.data.clone(), requires_grad=True).cuda()
@@ -36,23 +37,21 @@ class StyleLoss(nn.Module):
     def forward(self, input, target):
         return nn.MSELoss()(GramMatrix()(input), target)
 
-layer_indexes = [3, 8, 17, 27, 35] # Only valid for VGG19
-n_content_layers = 2
-content_layers = layer_indexes[-n_content_layers:]
+content_layers = [21] # Only valid for VGG19
 content_targets = list([vgg[:l+1](content_image).detach() for l in content_layers])
 content_loss_fns = [nn.MSELoss().cuda()] * len(content_targets)
-style_layers = layer_indexes
+style_layers = [1, 6, 11, 20, 29] # Only valid for VGG19
 style_targets = list([GramMatrix()(vgg[:l+1](style_image)).detach() for l in style_layers])
 style_loss_fns = [StyleLoss().cuda()] * len(style_targets)
 
 loss_layers = content_layers + style_layers
 targets = content_targets + style_targets
 loss_fns = content_loss_fns + style_loss_fns
-weights = [1000]*len(content_targets) + [5]*len(style_targets)
+weights = [5]*len(content_targets) + [1000]*len(style_targets)
 optimizer = optim.LBFGS([stylized_image])
 n_iterations = 100
 for i in range(1, n_iterations):
-    save_img(content_image.data[0].cpu().squeeze(), 'steps/transfer_0.png')
+    save_img(content_image.data[0].cpu().squeeze(), 'steps/transfer_00000.png')
     print('Iteration: {}'.format(i))
     def single_step():
         optimizer.zero_grad()

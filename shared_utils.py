@@ -25,11 +25,12 @@ def normalize_batch(batch):
 
 def load_img(path):
     img = Image.open(path)
-    img = Variable(transform_img(img))
+    img = Variable(transform_img(img), requires_grad=False)
     img = img.unsqueeze(0)
     return img
 
 def save_img(img, filename):
+    img = img.data[0].cpu().squeeze()
     post = transforms.Compose([
          transforms.Lambda(lambda x: x.mul_(1./255)),
          #transforms.Normalize(mean=[-0.40760392, -0.45795686, -0.48501961], std=[1,1,1]),
@@ -37,7 +38,19 @@ def save_img(img, filename):
          ])
     img = post(img)
     img = img.clamp_(0,1)
-    image_filepath = os.path.join("./images", filename)
+    image_filepath = os.path.join(filename)
     os.makedirs(os.path.dirname(image_filepath), exist_ok=True)
     utils.save_image(img, image_filepath, normalize=True)
-    return
+    return image_filepath
+
+def merge_images(paths, output_path):
+    images = list([Image.open(p) for p in paths])
+    widths, heights = zip(*(i.size for i in images))
+    total_width = sum(widths)
+    max_height = max(heights)
+    new_im = Image.new('RGB', (total_width, max_height))
+    x_offset = 0
+    for im in images:
+        new_im.paste(im, (x_offset,0))
+        x_offset += im.size[0]
+    new_im.save(output_path)

@@ -192,6 +192,6 @@ tags
 
 
 images/
-dancer_picasso_experiment/
-london_bright_experiment/
+dancer_picasso_experiment/**/
+london_bright_experiment/**/
 
